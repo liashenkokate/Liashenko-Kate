@@ -1,11 +1,10 @@
-﻿// HW_#1.13 Liashenko Kate
-/**/
+﻿// HW_#1.13 Liashenko Kateryna
 #include <stdio.h>
 #include <math.h>
-int main() {
+int main(){
 	double y, function_result;
 	printf("y = ");
 	scanf_s("%lf", &y);
 	function_result = log10(y);
-	printf("answer = %0.3f\n ", function_result);
+	printf("Answer = %0.3f\n ", function_result);
 }
