@@ -1,0 +1,356 @@
+/*7.1*/
+#include <stdio.h>
+#define N 5
+
+ int main() {
+     int mas[] = { 5,12,3,4,7 };
+     double a;
+     printf("a=");
+     scanf("%lf", &a);
+     int count = 0;
+     for (int i = 0; i < N; i++) {
+         if (mas[i] < a) count++;
+     }
+     printf("K=%d", count);
+ }
+
+
+
+
+/*7.1(а)*/
+#include<stdio.h> 
+
+#define SIZE 5
+
+ int main() {
+     int arr[] = { 1,2,3,4,5 };
+     double number;
+     printf("Enter number = ");
+     scanf("%d", &number);
+     int cnt = 0;
+     for (int i = 0; i < size; i++) {
+         if (arr[i] < number) cnt++;
+     }
+     printf("Elements < number: %d \n", cnt);
+ }
+
+
+
+/*7.2*/
+#include <stdio.h>
+#define N 4
+ int main() {
+     int mas[N] = { 5, 112, 4, 3 };
+     for (int i = N - 1; i >= 0; i--) {
+         printf("a[%d]=%d, ", i, mas[i]);
+     }
+ }
+
+
+/*7.2(b)*/
+#include <stdio.h>
+ int main()
+ {
+     float x;
+     scanf_s("%f", &x);
+     int a[5] = { 4 , 3 , 5 , 6 , 8 };
+     int i = 0;
+     int k = 0;
+     while (i < 5) {
+         if (a[i] >= x) k = k;
+         else k += 1;
+         i += 1;
+     }
+     printf("num of el %d", k);
+     getchar();
+     getchar();
+ }
+
+
+
+//7.3
+#include <stdio.h>
+#include <math.h>
+#define N 3// 10
+ double sum_arr(double mas[N]) {
+     double sum = 0.0;
+     for (int i = 0; i < N; i++) {
+         if (mas[i] > M_E) {
+             sum += mas[i];
+         }
+     }
+     return sum;
+ }
+ int main() {
+     double mas[N];
+     for (int i = 0; i < N; i++) {
+         printf("mas[%d]=", i);
+         scanf("%lf", &mas[i]);
+     }
+     printf("Sum =%lf", sum_arr(mas));
+ }
+
+
+
+
+//7.4
+#include <stdio.h>
+#include <math.h>
+#include <stdbool.h>
+#define N 5
+ int max_arr(int mas[], int size) {
+     int max_mas = mas[0];
+     for (int i = 1; i < size; i++) {
+         if (mas[i] > max_mas) {
+             max_mas = mas[i];
+         }
+     }
+     return max_mas;
+ }
+ void showArray(int arr[], unsigned n) {
+     for (unsigned i = 0; i < n; i++) {
+         printf("a[%d]=%d \t", i, arr[i]);
+     }
+ }
+ bool inputArray(int* arr, int n) {
+     for (int i = 0; i < n; ++i) {
+         printf("a[%d]=", i);
+         int r = scanf("%d", &arr[i]);
+         if (r != 1) {
+             printf("Ty scho vviv!!! break");
+             return false;
+         }
+     }
+     return true;
+ }
+ int main() {
+     int mas[N];
+     inputArray(mas, N);
+     showArray(mas, N);
+     printf("Max =%d", max_arr(mas, N));
+ }
+
+
+
+//7.4(a)
+#include<stdio.h>
+#define SIZE 5
+ int main()
+ {
+     int arr[SIZE];
+     int max;
+     for (int i = 0; i < size; i++)
+     {
+         printf("arr[%d"] = ",i);
+         scanf("%d", &arr[i]);
+     }
+     max = arr[0];
+     for (int i = 1; i < size; i++)
+     {
+         if (max < arr[i])
+             max = arr[i];
+     }
+     cout << "Max: " << max << endl;
+ }
+
+
+
+
+//7.5
+#include <stdio.h>
+#define N 5
+ int printOdds(unsigned mas[], size_t size) {
+     unsigned  sum1 = 0, sum2 = 0;
+     for (size_t i = 0; i < size; i++) {
+         if (mas[i] % 2) {
+             sum2 += mas[i];
+         }
+         else {
+             sum1 += mas[i];
+         }
+     }
+     printf("Sum of odds - %u sum of evens - %u", sum1, sum2);
+     return 0;
+ }
+ int main() {
+     unsigned mas[N];
+     for (size_t i = 0; i < N; i++) {
+         printf("mas[%u]=");
+         scanf("%u", &mas[i]);
+     }
+     printOdds(mas, N);
+ }
+
+
+
+
+//7.6
+#include <stdio.h>
+#include <stdlib.h>
+#define N 20
+
+ int input(double mas[], int size);
+ void output(const double mas[], int size);
+ int scal_sum(const double mas1[], const double mas2[], double mas3[], int size);
+ double scal_mult(const double mas1[], const double mas2[], int size);
+ double* diff_vect(const double mas1[], const double mas2[], int size);
+
+ int main() {
+
+     double mas1[N];
+     double mas2[N];
+     double mas3[N];
+
+     unsigned n;
+     double dob;
+
+     do {
+         printf("N=");
+         scanf("%u", &n);
+     } while (n == 0 || n > 20);
+
+
+     input(mas1, n);
+     input(mas2, n);
+
+     dob = scal_mult(mas1, mas2, n);
+
+     scal_sum(mas1, mas2, mas3, n);
+
+     printf("Dobutok =%lf", dob);
+
+     output(mas3, n);
+ }
+ int input(double mas[], int size) {
+
+     for (int i = 0; i < size; i++) {
+         printf("mas[%d]=", i);
+         scanf("%lf", &mas[i]);
+     }
+     return size;
+ }
+
+ void output(const double mas[], int size) {
+
+     for (int i = 0; i < size; i++) {
+         printf("\n mas[%d]= %lf", i, mas[i]);
+     }
+ }
+
+
+ int scal_sum(const double mas1[], const double mas2[], double mas3[], int size) {
+     for (int i = 0; i < size; i++) {
+         mas3[i] = mas1[i] + mas2[i];
+     }
+     return 0;
+ }
+
+ double scal_mult(const double mas1[], const double mas2[], int size) {
+     double res = 0;
+     for (int i = 0; i < size; i++) {
+         res += mas1[i] * mas2[i];
+     }
+     return res;
+ }
+
+ double* diff_vect(const double mas1[], const double mas2[], int size) {
+     static double mas3[N];
+     for (int i = 0; i < size; i++) {
+         mas3[i] = mas1[i] - mas2[i];
+     }
+#include<stdio.h> 
+
+
+     void enter_arr(int n, double* arr) {
+         for (int i = 0; i < n; i++) {
+             printf("arr[%d] = ", i);
+             scanf("%lf", &arr[i]);
+         }
+     }
+
+     void print_arr(int n, const double* arr) {
+         for (int i = 0; i < n; i++) {
+             printf("arr[%d] = %lf", i, arr[i]);
+         }
+         printf("\n");
+     }
+
+     void sum_arr(int n, const double* arr1, const double* arr2, double* a) {
+
+         for (int i = 0; i < n; i++) {
+             a[i] = arr1[i] + arr2[i];
+         }
+     }
+
+     double dob_arr(int n, const double arr1[], const double arr2[]) {
+         double dob = 0;
+         for (int i = 0; i < n; i++) {
+             dob += arr1[i] * arr2[i];
+         }
+         return dob;
+     }
+
+     int main() {
+         const size_t size = 4;
+         double arr1[size];
+         enter_arr(size, arr1);
+         print_arr(size, arr1);
+         double arr2[size];
+         enter_arr(size, arr2);
+         print_arr(size, arr2);
+         double arr3[size];
+         sum_arr(size, arr1, arr2, arr3);
+         print_arr(size, arr3);
+         printf("Dob:%lf \n", dob_arr(size, arr1, arr2));
+     }
+     return mas3;
+ }
+
+
+
+
+
+ //7.6(a)
+#include<stdio.h> 
+ void enter_arr(int n, double* arr) {
+     for (int i = 0; i < n; i++) {
+         printf("arr[%d] = ", i);
+         scanf("%lf", &arr[i]);
+     }
+ }
+
+ void print_arr(int n, const double* arr) {
+     for (int i = 0; i < n; i++) {
+         printf("arr[%d] = %lf", i, arr[i]);
+     }
+     printf("\n");
+ }
+
+ void sum_arr(int n, const double* arr1, const double* arr2, double* a) {
+
+     for (int i = 0; i < n; i++) {
+         a[i] = arr1[i] + arr2[i];
+     }
+ }
+
+ double dob_arr(int n, const double arr1[], const double arr2[]) {
+     double dob = 0;
+     for (int i = 0; i < n; i++) {
+         dob += arr1[i] * arr2[i];
+     }
+     return dob;
+ }
+
+ int main() {
+     const size_t size = 4;
+     double arr1[size];
+     enter_arr(size, arr1);
+     print_arr(size, arr1);
+     double arr2[size];
+     enter_arr(size, arr2);
+     print_arr(size, arr2);
+     double arr3[size];
+     sum_arr(size, arr1, arr2, arr3);
+     print_arr(size, arr3);
+     printf("Dob:%lf \n", dob_arr(size, arr1, arr2));
+ }
