@@ -1,0 +1,191 @@
+#include <stdio.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define LEN_NAME 225
+#define MAX_MAS 100
+
+typedef struct {
+	char name[LEN_NAME];
+	int height;
+}Mount;
+
+bool inputMount(Mount* x) {
+	printf("Mount name:");
+	scanf_s("%s", x->name);
+	printf("Mount height:");
+	scanf_s("%d", &x->height);
+	return true;
+}
+
+void outputMount(const Mount* x) {
+	printf("Mount %s of height %d\n", x->name, x->height);
+}
+
+const char* maxHeight(const Mount* arr, size_t n) {
+	if (n == 0) return "No mountains";
+
+	int maxh = arr[0].height;
+	int indexMax = 0;
+
+	for (int i = 1; i < n; i++) {
+		if (arr[i].height > maxh) {
+			maxh = arr[i].height;
+			indexMax = i;
+		}
+	}
+	return arr[indexMax].name;
+}
+
+void heightByName(const Mount* arr, size_t n, const char* mountname) {
+	bool isFound = false;
+	for (int i = 0; i < n; i++) {
+		if (strcmp(arr[i].name, mountname) == 0) {
+			printf("\nMount %s has height %d\n", mountname, arr[i].height);
+			isFound = true;
+			break;
+		}
+	}
+	if (!isFound) {
+		printf("Thereis no mountain %s!\n", mountname);
+	}
+}
+
+int main() {
+	Mount test[MAX_MAS] = { {"K2", 8689}, {"Everest", 8848}, {"Hill", 1234} };
+	printf("%s\n", maxHeight(test, 3));
+
+	heightByName(test, 3, "Goverla");
+
+	Mount mnt[MAX_MAS];
+	size_t n;
+	printf("Input n=");
+	scanf_s("%zu", &n);
+
+	for (size_t i = 0; i < n; i++) {
+		inputMount(&mnt[i]);
+	}
+	printf("%s\n", maxHeight(mnt, n));
+	printf("name:");
+	char mname[LEN_NAME];
+	scanf_s(" ");
+	fgets(mname, LEN_NAME, stdin);
+	heightByName(mnt, n, mname);
+}
+
+
+
+
+//11.1
+#include <stdio.h>
+#include <stdlib.h>
+
+
+int write_array_to_file(float* arr, int n, const char* fname) {
+	FILE* fp;
+	fopen_s(&fp, fname, "wb");
+	if (fp == NULL) {
+		scanf_s(" ");
+		printf("Error in file %s for writing", fname, stderr);
+		return -1;
+	}
+	int res = fwrite(arr, sizeof(*arr), n, fp);
+	fclose(fp);
+	return res;
+
+}
+
+int read_array_to_file(const char* fname) {
+	FILE* fp;
+	fopen_s(&fp, fname, "rb");
+	if (fp == NULL) {
+		scanf_s(" ");
+		printf("Error in file %s for reading", fname, stderr);
+		return -1;
+	}
+	float x;
+	int count = 0;
+	while (!feof(fp)) {
+		fread(&x, sizeof(float), 1, fp);
+		count++;
+		printf("%f", x);
+	}
+	fclose(fp);
+	return count;
+
+}
+
+int main() {
+	float* mas;
+	int n;
+	printf("n=");
+	scanf_s("%d", &n);
+	mas = (float*)malloc(n * sizeof(float));
+	for (int i = 0; i < n; i++) {
+		printf("a[%d]=", i);
+		scanf_s("%f", &mas[i]);
+	}
+
+	char fname[20];
+	printf("file:");
+	scanf_s("%s", fname);
+	write_array_to_file(mas, n, fname);
+	read_array_to_file(fname);
+	free(mas);
+}
+
+
+#include "rational.h"
+
+int inputRat(Rational* x) {
+	printf("chiselnyk:");
+	scanf_s("&d", &x->numerator);
+	printf("znamennyk:");
+	scanf_s("&u", &x->denominator);
+
+	if (x->denominator == 0) return -1;
+	return 0;
+}
+
+void outputRat(Rational* x) {
+	printf("%d/%u\n", x.numerator, x.denominator);
+}
+
+Rational addRat(Rational x, Rational y) {
+	Rational z;
+	z.numerator = x.numerator * y.numerator + y.denominator * x.denominator;
+	z.denominator = x.denominator * y.denominator;
+	return z;
+}
+
+Rational multRat(Rational x, Rational y) {
+	Rational res = { .numerator = x.numerator * y.numerator,  .denominator = x.denominator * y.denominator };
+	reduceRat(&res);
+	return res;
+}
+
+bool cmpRational(Rational x, Rational y) {
+	return (x.numerator * y.denominator > y.numerator * x.denominator);
+}
+
+unsigned gcd(unsigned x, unsigned y) {
+	uncigned tmp;
+	if (x < y) {
+		tmp = x;
+		x = y;
+		y = tmp;
+	}
+	while (y != 0) {
+		tmp = y;
+		y = x % y;
+		x = tmp;
+	}
+	return x;
+}
+
+void reduceRational(Rational* x) {
+	unsigned d = gcd(x->numerator, x->denominator);
+	x->numerator /= d;
+	x->denominator /= d;
+}
