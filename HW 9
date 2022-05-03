@@ -1,0 +1,49 @@
+// h_w_8.18.cpp 
+#include <stdio.h>
+#define N 10
+#define M 10
+void func(int p[N][M], int k[N][M], int m, int n) {
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= m; j++) {
+            if (p[1][j] > 0 || p[n][j] > 0) {
+                printf("Not all negative\n");
+                break;
+            }
+            else {
+                if (i == 0) k[n][j] = p[1][j];
+                else if (i == n) k[1][j] = p[n][j];
+                else k[i][j] = p[i][j];
+            }
+        }
+    }
+    for (int i = 1; i <= n; i++) {
+        printf("\n");
+        for (int j = 1; j <= m; j++) {
+            printf("p[%d][%d] = %d \n ", i, j, k[i][j]);
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    int p[N][M], k[N][M];
+    printf("m = ");
+    scanf_s("%d", &m);
+    printf("n = ");
+    scanf_s("%d", &n);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            printf("a[%d][%d]= ", i, j);
+            scanf_s("%d", & p[i][j]);
+            k[i][j] = 0;
+        }
+    }
+    for (int i = 1; i <= n; i++) {
+        printf("\n");
+        for (int j = 1; j <= m; j++) {
+            printf("k[%d][%d] = %d \n", i, j, p[i][j]);
+        }
+    }
+    printf("\n");
+    func(p, k , m, n);
+}
