@@ -1,0 +1,61 @@
+// h_w_3.17.cpp
+#include <stdio.h>
+#include <math.h>
+struct xy {
+int x, y;
+};
+int is_intersection(xy left_1, xy right_1, xy left_2, xy right_2) {
+if (left_1.x < left_2.x && left_1.y < left_2.y) {
+if (left_2.x < right_1.x && left_2.y < right_1.y) {
+printf("-The squares intersec-t\n");
+return 1;
+}
+}
+if (left_1.x < left_2.x && left_1.y > left_2.y) {
+if (right_1.x < right_2.x && right_1.y > right_2.y) {
+printf("--The squares intersect--\n");
+return 2;
+}
+}
+if (left_2.x < left_1.x && left_2.y < left_1.y) {
+if (left_1.x < right_2.x && left_1.y < right_2.y) {
+printf("---The squares intersect---\n");
+return 3;
+}
+}
+if (left_1.x > left_2.x && left_1.y < left_2.y) {
+if (right_1.x > right_2.x && right_1.y < right_2.y) {
+printf("----The squares intersect----\n");
+return 4;
+}
+}
+printf("===The squares does not intersect=== \n");
+}
+
+int coordinate (xy left_1, xy right_1, xy left_2, xy right_2, int v) {
+if (v == 1) {
+printf("Left bottom coordinates (%i, %i)\n", left_2.x, left_2.y);
+printf("Right upper coordinates (%i, %i)\n", right_1.x, right_1.y);
+}
+if (v == 2) {
+printf("Left bottom coordinates (%i, %i)\n", left_2.x, left_1.y);
+printf("Right upper coordinates (%i, %i)\n", right_1.x, right_2.y);
+}
+if (v == 3) {
+printf("Left bottom coordinates (%i, %i)\n", left_1.x, left_1.y);
+printf("Right upper coordinates (%i, %i)\n", right_2.x, right_2.y);
+}
+if (v == 4) {
+printf("Left bottom coordinates (%i, %i)\n", left_1.x, left_2.y);
+printf("Right upper coordinates (%i, %i)\n", right_2.x, right_1.y);
+}
+return 0;
+}
+
+int main() {
+xy left_1 = { 3, -7 }, right_1 = { 6, -4 };
+xy left_2 = { 2, -5 }, right_2 = { 5, -2 };
+int v = is_intersection(left_1, right_1, left_2, right_2);
+printf("Intersection variety: %i \n", v);
+coordinate (left_1, right_1, left_2, right_2, v);
+}
