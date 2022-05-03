@@ -1,0 +1,142 @@
+//12.1
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main() {
+    double x, y;
+    cin >> x;
+    cin >> y;
+    cout << fixed << "x^y=" << pow(x, y) << endl;
+    cout << scientific << "x^y= " << pow(x, y) << endl;
+}
+
+
+
+//12.2
+#include <cstring>
+#include <iostream>
+using namespace std;
+const int N = 10;
+int main()
+{
+    char str[N];
+    unsigned long long sums = 0UL;
+    unsigned long long x;
+    char* err;
+    while (cin.get(str, N)) {
+        x = strtoull(str, &err, N);
+        sums += x;
+    }
+    cout << "sum=" << sums << "\n";
+}
+
+
+
+
+//12.3
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <string>
+using namespace std;
+void pl(int n) {
+    for (int i = 1; i <= n; i++) {
+        cout << "++++++";
+    }
+    cout << endl;
+}
+int main() {
+    int n;
+    string s1, s2, s3;
+    cin >> n;
+    cout << "n=" << n << endl;
+
+    pl(n);
+    for (int i = 1; i <= n; i++) {
+        cout << "   " << int(i);
+        if (i == n) cout << endl;
+    }
+    pl(n);
+    for (int i = 1; i <= n; i++) {
+        if ((double)sqrt(i) - (int)sqrt(i) == 0) {
+            cout << "   " << int(sqrt(i));
+        }
+        else {
+            cout << fixed;
+            cout << setprecision(2);
+            cout << " " << sqrt(i);
+        }
+        if (i == n) cout << endl;
+    }
+    pl(n);
+}
+
+
+
+
+
+//12.4
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#pragma warning(disable : 4996)
+using namespace std;
+int main() {
+    unsigned n;
+    cin >> n;
+    int* m = new int[n];
+    for (unsigned i = 0; i < n; i++) {
+        cin >> m[i];
+    }
+    const char fname[] = "data.txt";
+    double* x = new double[n];
+    fstream f;
+    f.open(fname, fstream::in);
+    if (f.bad()) {
+        cerr << "error opening file" << fname << "\n";
+        delete[] x;
+        delete[] m;
+        return 0;
+    }
+    double a;
+    int k = 0;
+    while (f >> a && k < n) {
+        x[k++] = a;
+    }
+    if (k != n) {
+        cerr << "read only" << k << "numbers but" << n << "needed" << "\n";
+    }
+    else {
+        const char gname[] = "data2.txt";
+        fstream g;
+        g.open(gname, fstream::out);
+        for (unsigned i = 0; i < n; i++) {
+            g << pow(x[i], m[i]) << "";
+        }
+        g.close();
+    }
+    f.close();
+    delete[] x;
+    delete[] m;
+}
+
+
+
+
+//12.5
+#include <iostream>
+#include <fstream>
+using ULL = unsigned long long;
+using namespace std;
+int main() {
+    ULL mas[2000];
+    int k = 0;
+    const char fname[] = "data3.txt";
+    fstream f(fname, fstream::in);
+    while (f >> mas[k++]) {
+    }
+    f.close();
+    cout.precision(4);
+    for (int i = k - 2; i >= 0; i--) {
+        cout << sqrt(mas[i]) << endl;
+    }
