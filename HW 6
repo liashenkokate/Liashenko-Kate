@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <math.h>
+double function(const double x, const double eps){
+	double func = 1 + 0.5 * x, b = 0.5 * x, b1 = -1, b2 = 1, b3 = 2, b4 = x * x;
+	for (unsigned i = 1, j = 4; fabs(b) >= eps; i += 2, j += 2) {
+		b2 *= i;
+		b3 *= j;
+		b = b1 * b2 / b3 * b4;
+		func += b;
+		b1 *= -1;
+		b4 *= x;
+	}
+	return func;
+}
+int main(){
+	double x;
+	double eps;
+
+	printf("x: ");
+	scanf_s("%lf", &x);
+
+	printf("epsilon: ");
+	scanf_s("%lf", &eps);
+
+	printf("sqrt(1 + %g) = %g\n", x, function(x, eps));
+	printf("Program completed");
+}
