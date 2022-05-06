@@ -1,0 +1,18 @@
+// 7.9(а).cpp
+#include <stdio.h>
+int main() {
+    int n = 9, i;
+    double a1=1, a2=3, a3=4, a4=7, a5=9, a6=11, a7=12, a8=78, a9=35;
+    double mas[] = { a1,a2,a3,a4,a5,a6,a7,a8,a9 };
+    double max = a1;
+    for (i = 0; i < n; i++) {
+        double k = mas[i];
+        if (k > max) {
+            max = k;
+        }
+    }
+    for (i = 0; i < n; i++)
+        printf("m[%d] = %.1f \n", i + 1, mas[i]);
+    printf("\n");
+    printf("-----Maximum-----: %.1f", max);
+}
