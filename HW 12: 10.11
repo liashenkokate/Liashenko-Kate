@@ -1,0 +1,68 @@
+#include<iostream>
+#include<list>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+ 
+class People {
+public:
+    string surName;
+    string cityName;
+    string adress;
+ 
+};
+ 
+void Input(People* l, int n) {
+    string surName, cityName, adress;
+ 
+ 
+    for (int i = 0; i < n; i++) {
+        cout << "Введiть прiзвище: ";
+        cin >> surName;
+ 
+        cout << "Введiть мiсто: ";
+        cin >> cityName;
+ 
+        cout << "Введiть адресу: ";
+        cin >> adress;
+ 
+        l[i].surName = surName;
+        l[i].cityName = cityName;
+        l[i].adress = adress;
+ 
+        cout << endl;
+    }
+}
+ 
+// Виводимо весь список
+void GetList(People* l, int n) {
+    for (size_t i = 0; i < n; i++)
+        cout << "SurName: " << l[i].surName << "\t" << "City: " << l[i].cityName << "\t" << "Adress: " << l[i].adress << endl;
+}
+ 
+void GetListParameters(People* l, int n) {
+    int k = 1;
+ 
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+            if (l[i].cityName != l[j].cityName && l[i].adress == l[j].adress) {
+                cout << "SurName: " << l[j].surName << "\t" << "City: " << l[j].cityName << "\t" << "Adress: " << l[j].adress << endl;
+                k++;
+                if (k == 2)break;
+            }
+}
+ 
+ 
+int main() {
+    setlocale(0, "");
+    const int n = 3;
+    People l[n];
+ 
+    Input(l, n);
+ 
+    GetList(l, n);
+    cout << endl;
+    cout << "\n\n";
+    GetListParameters(l, n);
+    return 0;
+}
