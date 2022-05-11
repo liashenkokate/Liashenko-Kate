@@ -1,0 +1,47 @@
+//h_w_5.22.cpp
+
+#include <stdio.h>
+#include <math.h>
+
+double func1(const double x, const unsigned n) {
+    double y = 0;
+    double t = 1;
+    for (unsigned i = 0; i <= n; i++) {
+        y += t;
+        t *= x;
+    }
+    return y;
+}
+double func2(const unsigned n, const double x, const double y) {
+    double res = 0;
+    double x1 = 1;
+    double y1 = 1;
+    for (unsigned i = 0; i <= n; i++) {
+        res += x1 * y1;
+        x1 *= x * x;
+        y1 *= y;
+    }
+    return res;
+}
+unsigned func(const unsigned n) {
+    unsigned res = 1;
+    for (unsigned i = n; i > 0; i -= 2)
+        res *= i;
+    return res;
+}
+int main() {
+    double a, a1 = 1, b, b1 = 1 / sqrt(2), m, m1 = 1/4, p, p1 = 1;
+    unsigned n;
+    for (unsigned i = 0; i < n; i++) {
+        a = (a1 + b1) / 2;
+        b = sqrt(a1 * b1);
+        m = m1 - p1 * pow(a1 - a, 2);
+        p = 2 * p1;
+        a1 = a;
+        b1 = b;
+        m1 = m;
+        p1 = p;
+    }
+    printf("PI = %g\n", pow(a + b,2) / (4 * m));
+    return 0;
+}
