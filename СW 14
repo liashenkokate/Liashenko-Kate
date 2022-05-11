@@ -1,0 +1,152 @@
+
+//11.2
+#include <stdio.h>
+#include <math.h>
+#pragma warning(disable : 4996)
+
+#define EPS 0.001
+
+int write_reals_to_file(const char* fnameF) { 
+	FILE* fp = fopen(fnameF, "wb");
+	if (fp == NULL) {
+		printf("Error opening %s", fnameF);
+		return -1;
+	}
+	double tmp;
+	do {
+		printf("x=");
+		scanf_s("%lf", &tmp);
+		if (fabs(tmp) < EPS) break;
+		fwrite(&tmp, sizeof(tmp), 1, fp);
+	} while (1);
+	fclose(fp);
+	return 0;
+}
+
+int write_limit_reals_to_file(const char* fnameF, const char* fnameG, double a) {
+	FILE* Fp = fopen(fnameF, "rb");
+	if (Fp == NULL) {
+		printf("Error opening %s", fnameF);
+		return -1;
+	}
+	FILE* Gp = fopen(fnameG, "wb");
+	if (Gp == NULL) {
+		printf("Error opening %s", fnameG);
+		return -2;
+	}
+	double tmp;
+	do {
+		int res = fread(&tmp, sizeof(tmp), 1, Fp);
+		if (res != 1) {
+			break;
+		}
+		if (fabs(tmp) < a) {
+			fwrite(&tmp, sizeof(tmp), 1, Gp);
+		}
+	} while (!feof(Fp));
+	fclose(Fp);
+	fclose(Gp);
+}
+
+
+
+//11.3
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#define N 15
+int main() {
+	FILE* F = fopen("f.txt", "w");
+	FILE* G = fopen("n.txt", "a");
+	int n = 10000, u, mas[N], das[N];
+	for (int i = 0; i < n; i++) {
+		printf("Numbers:\n");
+		scanf("%d", &u);
+		if (u != 0) {
+			fputc(u, F);
+			fprintf(F, "%d\n", u);
+			//            mas[i] = u;
+			//            printf("%d\n", mas[i]);
+			if (u / sqrt(u) == sqrt(u)) {
+				//                das[i] = u;
+				//                printf("%d\n", das[i]);
+				fputc(u, G);
+				fprintf(G, "%d\n", u);
+			}
+		}
+		else break;
+	}
+	fclose(F);
+	fclose(G);
+}
+
+//11.4
+#include <stdio.h>
+#include <ctype.h>
+#pragma warning(disable : 4996)
+
+typedef struct Rect {
+	unsigned num;
+	double Ax;
+	double Ay;
+	double Bx;
+	double By;
+};
+
+int inputRect(Rect* x) {
+	printf("n=");
+	scanf("%u", &x->num);
+	printf("Ax,y=");
+	scanf("%lf %lf", &x->Ax, &x->Ay);
+	printf("Bx,y=");
+	scanf("%lf %lf", &x->Bx, &x->By);
+	return 0;
+}
+
+void outRect(const Rect* x) {
+	printf("%u: (%lf,%lf) - (%lf %lf)", x->Ax, x->Ay, x->Bx, x->By);
+
+}
+
+int writeRects(const char* fname) {
+	FILE* fp = fopen(fname, "wb");
+	//check file pointer
+	Rect r;
+	int count = 0;
+	do {
+		char c;
+		do {
+			printf("Next rectangle?y/n");
+			scanf("%c", &c);
+			//char c = (char) getchar();
+		} while (tolower(c) != 'n' || tolower(c) != 'y');
+		if (c == 'n') break;
+		if (inputRect(&r) == 0) {
+			fwrite(&r, sizeof(r), 1, fp);
+			count++;
+		}
+	} while (1);
+	fclose(fp);
+	return count;
+}
+double area(const Rect* r) {
+	return (r->Ax - r->Bx) * (r->Ay - r->By);
+}
+
+int findMaxRect(const char* fname) {
+	FILE* fp = fopen(fname, "rb");
+	Rect rect;
+	double squareMax = 0;
+	Rect rmax;
+	while (!feof(fp)) {
+		int r = fread(&rect, sizeof(rect), 1, fp);
+		if (r != 1) break;
+		if (area(&rect) > squareMax) {
+			squareMax = area(&rect);
+			rmax = rect;
+		}
+	}
+	outRect(&rmax);
+	printf(":%g\n", area(&rmax));
+	return rmax.num;
+}
