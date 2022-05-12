@@ -1,0 +1,32 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <set>
+#include <vector>
+#include <cmath>
+
+void do_16() {
+    ifstream input_stream("input_16.txt");
+    vector<int> numbers;
+
+    // read the input
+    int number;
+    while (input_stream >> number) {
+        numbers.push_back(number);
+    }
+
+    ofstream output_stream ("output_16.txt");
+
+    for (int number : numbers) {
+        float root = number > 0 ? sqrt(number) : 0;
+        output_stream << number << "," << fixed << setprecision(5) << root << "\t";
+    }
+
+    output_stream.close();
+}
+
+int main() {
+    do_16();
+    return 0;
+}
