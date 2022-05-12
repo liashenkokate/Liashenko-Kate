@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+
+int main() {
+    int x;
+    printf("Please enter x.\n");
+    scanf("%d", &x);
+
+    int min_p = -1, max_p = 0;
+    for (int i = 0; i < 32; i++) {
+        int b = (x >> i) & 1;
+        if (b == 1) {
+            if (min_p == -1) {
+                min_p = i;
+            }
+            max_p = i;
+        }
+
+        // check
+        printf("%d", b);
+    }
+    printf("\nlowest=%d highest=%d\n", min_p, max_p);
+}
