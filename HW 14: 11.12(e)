@@ -1,0 +1,225 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+struct toy {
+    char name[25];
+    int price;
+    int start_age;
+    int end_age;
+};
+
+void generate_toys() {
+    FILE *outfile;
+    outfile = fopen ("toys.dat", "w");
+    if (outfile == NULL)
+    {
+        fprintf(stderr, "\nError opened file\n");
+        exit (1);
+    }
+
+    struct toy toys[6] = {
+            {"lego", 11, 6, 9},
+            {"ball", 25, 5, 12},
+            {"doll", 8, 3, 9},
+            {"ball", 30, 7, 14},
+            {"doll", 16, 4, 10},
+            {"ball", 27, 5, 11}
+    };
+    for (int i = 0; i < 6; i++) {
+        fwrite (&toys[i], sizeof(struct toy), 1, outfile);
+    }
+
+    fclose (outfile);
+}
+
+FILE* open_file(char file_name[20], char option[2]) {
+    FILE *infile;
+    infile = fopen(file_name, option);
+    if (infile == NULL) {
+        fprintf(stderr, "\nError opening file\n");
+        exit(1);
+    }
+    return infile;
+}
+
+void write_number_results_to_file(char file_name[20], int number) {
+    FILE *outfile = open_file(file_name, "w");
+    fwrite (&number, sizeof(int), 1, outfile);
+    fclose (outfile);
+}
+
+void append_number_result_to_file(char file_name[20], int number) {
+    FILE *outfile = open_file(file_name, "a");
+    fwrite (&number, sizeof(int), 1, outfile);
+    fclose (outfile);
+}
+
+void append_name_result_to_file(char file_name[20], char* name) {
+    FILE *outfile = open_file(file_name, "a");
+    fwrite (name, sizeof(char), 20, outfile);
+    fclose (outfile);
+}
+
+void append_toy_result_to_file(char file_name[20], struct toy new_toy) {
+    FILE *outfile = open_file(file_name, "a");
+    fwrite (&new_toy, sizeof(struct toy), 1, outfile);
+    fclose (outfile);
+}
+
+FILE* open_toys_file() {
+    return open_file("toys.dat", "r");
+}
+
+void do_1(int max_price) {
+    FILE* file = open_toys_file();
+    struct toy input_toy;
+    while(fread(&input_toy, sizeof(struct toy), 1, file)) {
+        if (5 >= input_toy.start_age && 5 <= input_toy.end_age && input_toy.price <= max_price) {
+            printf("%s\n", input_toy.name);
+            append_name_result_to_file("func_1_res.dat", input_toy.name);
+        }
+    }
+    fclose (file);
+}
+
+void do_2(int n, int m) {
+    FILE* file = open_toys_file();
+    struct toy input_toy;
+    while(fread(&input_toy, sizeof(struct toy), 1, file)) {
+        if (n >= input_toy.start_age && n <= input_toy.end_age &&
+            m >= input_toy.start_age && m <= input_toy.end_age ) {
+            printf("%s\n", input_toy.name);
+            append_name_result_to_file("func_2_res.dat", input_toy.name);
+        }
+    }
+    fclose (file);
+}
+
+void do_3(int a) {
+    FILE* file = open_toys_file();
+    struct toy input_toy;
+    int max_price = 0;
+    while(fread(&input_toy, sizeof(struct toy), 1, file)) {
+        max_price = fmax(max_price, input_toy.price);
+    }
+    fclose (file);
+
+    file = open_toys_file();
+    while(fread(&input_toy, sizeof(struct toy), 1, file)) {
+        if (fabs(input_toy.price - max_price) <= a) {
+            printf("%s\n", input_toy.name);
+            append_name_result_to_file("func_3_res.dat", input_toy.name);
+        }
+    }
+    fclose (file);
+}
+
+void do_4(char* name) {
+    FILE* file = open_toys_file();
+    struct toy input_toy;
+    int max_price_with_name = 0;
+    while(fread(&input_toy, sizeof(struct toy), 1, file)) {
+        if (strcmp(input_toy.name, name) == 0) {
+            max_price_with_name = fmax(max_price_with_name, input_toy.price);
+        }
+    }
+    printf ("max price = %d", max_price_with_name);
+    write_number_results_to_file("func_4_res.dat", max_price_with_name);
+    fclose (file);
+}
+
+void do_5(char* name) {
+    FILE* file = open_toys_file();
+    struct toy input_toy;
+    while(fread(&input_toy, sizeof(struct toy), 1, file)) {
+        if (strcmp(input_toy.name, name) == 0) {
+            printf("%d\n", input_toy.price);
+            append_number_result_to_file("func_5_res.dat", input_toy.price);
+        }
+    }
+    fclose (file);
+}
+
+void do_6(int x, int y) {
+    FILE* file = open_toys_file();
+    struct toy input_toys[50];
+    int p = 0;
+    while(fread(&input_toys[p], sizeof(struct toy), 1, file)) {
+        p++;
+    }
+
+    for (int i = 0; i < p; i++) {
+        int first_toy_price = input_toys[i].price;
+        for (int j = i + 1; j < p; j++) {
+            int total_price = first_toy_price + input_toys[j].price;
+            if (x >= input_toys[i].start_age && x <= input_toys[i].end_age &&
+                x >= input_toys[j].start_age && x <= input_toys[j].end_age &&
+                total_price <= y) {
+                printf("Pair:\nname=%s price=%d start_age=%d end_age=%d\n", input_toys[i].name, input_toys[i].price,
+                       input_toys[i].start_age, input_toys[i].end_age);
+                printf("name=%s price=%d start_age=%d end_age=%d\n", input_toys[j].name, input_toys[j].price,
+                       input_toys[j].start_age, input_toys[j].end_age);
+                append_toy_result_to_file("func_6_res.dat", input_toys[i]);
+                append_toy_result_to_file("func_6_res.dat", input_toys[j]);
+
+            }
+        }
+    }
+    fclose (file);
+}
+
+void run_toys_interface() {
+    int command, max_price, n, m, a, x, y;
+    char name[20];
+
+    while (1) {
+        printf("Please enter function number (0 to quit).\n");
+        scanf("%d", &command);
+        switch (command) {
+            case 0: return;
+            case 1:
+                printf("Please enter max toy price.\n");
+                scanf("%d", &max_price);
+                do_1(max_price);
+                break;
+            case 2:
+                printf("Please enter n.\n");
+                scanf("%d", &n);
+                printf("Please enter m.\n");
+                scanf("%d", &m);
+                do_2(n, m);
+                break;
+            case 3:
+                printf("Please enter a.\n");
+                scanf("%d", &a);
+                do_3(a);
+                break;
+            case 4:
+                printf("Please enter toy name.\n");
+                scanf("%19s", name);
+                do_4(name);
+                break;
+            case 5:
+                printf("Please enter toy name.\n");
+                scanf("%19s", name);
+                do_5(name);
+                break;
+            case 6:
+                printf("Please enter x.\n");
+                scanf("%d", &x);
+                printf("Please enter y.\n");
+                scanf("%d", &y);
+                do_6(x, y);
+                break;
+            default: return;
+        }
+    }
+}
+
+
+int main() {
+      generate_toys();
+      run_toys_interface();
+}
