@@ -1,0 +1,111 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <set>
+#include <vector>
+#include <cmath>
+
+class Time {
+private:
+    int hours;
+    int minutes;
+    int seconds;
+
+    static int toSeconds(Time time) {
+        return time.hours * 3600 + time.minutes * 60 + time.seconds;
+    }
+
+    static Time toTime(int seconds) {
+        seconds = abs(seconds);
+        int hours = seconds / 3600;
+        int minutes = (seconds - hours * 3600) / 60;
+        int diff_seconds = seconds - hours * 3600 - minutes * 60;
+        return Time(hours, minutes, diff_seconds);
+    }
+
+public:
+    Time(int hours, int minutes, int seconds) {
+        this->hours = hours;
+        this->minutes = minutes;
+        this->seconds = seconds;
+    }
+
+    void setHours(int hours) {
+        this->hours = hours;
+    }
+
+    void setMinutes(int minutes) {
+        this->minutes = minutes;
+    }
+
+    void setSeconds(int seconds) {
+        this->seconds = seconds;
+    }
+
+    int getHours() {
+        return hours;
+    }
+
+    int getMinutes() {
+        return minutes;
+    }
+
+    int getSeconds() {
+        return seconds;
+    }
+
+    Time diff(Time otherTime) {
+        int current_seconds = toSeconds(*this);
+        int other_seconds = toSeconds(otherTime);
+        return toTime(current_seconds - other_seconds);
+    }
+};
+
+class Date {
+private:
+    int year;
+    int month;
+    int day;
+
+    static int toDays(Date date) {
+        return date.year * 12 * 30 + date.month * 30 + date.day;
+    }
+
+public:
+    Date(int year, int month, int day) {
+        this->year = year;
+        this->month = month;
+        this->day = day;
+    }
+
+    int getYear() {
+        return year;
+    }
+
+    int getMonth() {
+        return month;
+    }
+
+    int getDay() {
+        return day;
+    }
+
+    int diffDays(Date otherDate) {
+        int current_days = toDays(*this);
+        int other_days = toDays(otherDate);
+        return abs(current_days - other_days);
+    }
+};
+
+int main() {
+    Time time = Time(15, 25, 10);
+    Time otherTime = Time(12, 15, 5);
+    Time diff = time.diff(otherTime);
+    cout << diff.getHours() << " " << diff.getMinutes() << " " << diff.getSeconds() << endl;
+
+    Date date = Date(2022, 5, 10);
+    Date otherDate = Date(2022, 5, 22);
+    int diffDays = date.diffDays(otherDate);
+    cout << "Difference in days: " << diffDays << endl;
+}
