@@ -62,14 +62,33 @@ public:
     }
 };
 
+const int MONTH_DAYS[12] = {
+        31, 28, 31, 30, 31, 30,
+        31, 31, 30, 31, 30, 31
+};
+
 class Date {
 private:
+
     int year;
     int month;
     int day;
 
+    static int getLeapYears(Date date) {
+        int years = date.year;
+        if (date.month <= 2) {
+            years--;
+        }
+        return years / 4 - years / 100 + years / 400;
+    }
+
     static int toDays(Date date) {
-        return date.year * 12 * 30 + date.month * 30 + date.day;
+        int days = date.year * 365 + date.day;
+        for (int i = 0; i < date.month - 1; i++) {
+            days += MONTH_DAYS[i];
+        }
+        days += getLeapYears(date);
+        return days;
     }
 
 public:
@@ -98,14 +117,14 @@ public:
     }
 };
 
-int main() {
+void do_8() {
     Time time = Time(15, 25, 10);
     Time otherTime = Time(12, 15, 5);
     Time diff = time.diff(otherTime);
     cout << diff.getHours() << " " << diff.getMinutes() << " " << diff.getSeconds() << endl;
 
-    Date date = Date(2022, 5, 10);
-    Date otherDate = Date(2022, 5, 22);
+    Date date = Date(2022, 5, 12);
+    Date otherDate = Date(2019, 5, 22);
     int diffDays = date.diffDays(otherDate);
     cout << "Difference in days: " << diffDays << endl;
 }
