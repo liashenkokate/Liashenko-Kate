@@ -1,0 +1,88 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <set>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+string substitute_17(string text) {
+    if (text.empty()) {
+        return "";
+    }
+
+    string new_text = "";
+    char symbol = text[0];
+    int count = 1;
+    for (int i = 1; i < text.size(); i++) {
+        if (text[i] != symbol) {
+            if (count == 1) {
+                new_text += symbol;
+            } else {
+                new_text += symbol + to_string(count);
+            }
+            count = 1;
+            symbol = text[i];
+        } else {
+            count++;
+        }
+    }
+    if (count == 1) {
+        new_text += symbol;
+    } else {
+        new_text += symbol + to_string(count);
+    }
+
+    return new_text;
+}
+
+void do_17() {
+    ifstream input_stream("input_17.txt");
+    stringstream buffer;
+    buffer << input_stream.rdbuf();
+    string text = buffer.str();
+    string new_text = substitute_17(text);
+
+    ofstream output_stream ("output_17.txt");
+    output_stream << new_text << endl;
+    output_stream.close();
+}
+
+string substitute_13(string text) {
+    int shift = 5;
+
+    string new_text = "";
+    for (int i = 0; i < text.size(); i++) {
+        char symbol = tolower(text[i]);
+        if (symbol < 97 || symbol > 122) {
+            new_text += symbol;
+        } else {
+            char new_symbol =  (symbol + shift - 97) % 26 + 97;
+            new_text += new_symbol;
+        }
+    }
+
+    return new_text;
+}
+
+void do_13() {
+    ifstream input_stream("input_13.txt");
+    stringstream buffer;
+    buffer << input_stream.rdbuf();
+    string text = buffer.str();
+    string new_text = substitute_13(text);
+
+    ofstream output_stream ("output_13.txt");
+    output_stream << new_text << endl;
+    output_stream.close();
+}
+
+
+
+int main() {
+//    do_17();
+      do_13();
+    return 0;
+}
