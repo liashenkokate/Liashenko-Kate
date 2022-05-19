@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct point {
+    float x, y;
+};
+
+struct polygon {
+    int n;
+    struct point* points;
+};
+
+struct polygon* read_polygon() {
+    struct polygon* p = malloc(sizeof(struct polygon));
+    printf("Please enter points count:\n");
+    scanf("%d", &p->n);
+    p->points = malloc(p->n * sizeof(struct point));
+
+    for (int i = 0; i < p->n; i++) {
+        printf("Please enter point %d x:\n", i);
+        scanf("%f", &p->points[i].x);
+        printf("Please enter point %d y:\n", i);
+        scanf("%f", &p->points[i].y);
+    }
+
+    return p;
+}
+
+void print_polygon(struct polygon* p) {
+    printf("\nPolygon:\n");
+    for (int i = 0; i < p->n; i++) {
+        printf("(%f, %f) ", p->points[i].x, p->points[i].y);
+    }
+    printf("\n");
+}
+
+void do_6_k() {
+    struct polygon* p = read_polygon();
+    print_polygon(p);
+}
+
+int main() {
+    do_6_k();
+    return 0;
+}
