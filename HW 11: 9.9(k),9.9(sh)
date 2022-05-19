@@ -1,0 +1,123 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+float* generate_row(int m) {
+    float* r =  (float *) malloc(m * sizeof(float));
+    for (int i = 0; i < m; i++) {
+        r[i] = (float) (rand() - RAND_MAX / 2) / (float) RAND_MAX * 100;
+    }
+    return r;
+}
+
+float** generate_matrix(int n, int m) {
+    srand(time(NULL));
+
+    float** a = (float **) malloc(n * sizeof(float *));
+    for (int i = 0; i < n; i++) {
+        a[i] = generate_row(m);
+    }
+    return a;
+}
+
+void print_matrix(float** a, int n, int m) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%f \t", a[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void remove_column(float** a, int n, int m, int k) {
+    if (k >= m) {
+        printf("k should be less than m and greater than 0\n");
+        exit(0);
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = k; j < m - 1; j++) {
+            a[i][j] = a[i][j + 1];
+        }
+    }
+}
+
+void do_9_k() {
+    int n, m, k;
+    printf("Please enter n.\n");
+    scanf("%d", &n);
+
+    printf("Please enter m.\n");
+    scanf("%d", &m);
+
+    printf("Please enter k.\n");
+    scanf("%d", &k);
+
+    float** a = generate_matrix(n, m);
+    printf("Original matrix:\n");
+    print_matrix(a, n, m);
+
+    remove_column(a, n, m, k);
+    printf("Result matrix:\n");
+    print_matrix(a, n, m - 1);
+}
+
+float get_sq_sum(float* r, int m) {
+    float sum = 0;
+    for (int i = 0; i < m; i++) {
+        sum += r[i] * r[i];
+    }
+    return sum;
+}
+
+int get_min_sq_row_num(float** a, int n, int m) {
+    float min = get_sq_sum(a[0], m);
+    int min_pos = 0;
+    for (int i = 1; i < n; i++) {
+        float sq_sum = get_sq_sum(a[i], m);
+        if (sq_sum <= min) {
+            min = sq_sum;
+            min_pos = i;
+        }
+    }
+    return min_pos;
+}
+
+float** add_min_sq_row(float** a, int n, int m) {
+    int row_num = get_min_sq_row_num(a, n, m);
+    float** b = (float **) malloc((n + 1) * sizeof(float *));
+
+    for (int i = 0; i < row_num; i++) {
+        b[i] = a[i];
+    }
+    b[row_num] = generate_row(m);
+    for (int i = row_num + 1; i < m + 1; i++) {
+        b[i] = a[i - 1];
+    }
+
+    free(a);
+    return b;
+}
+
+void do_9_sh() {
+    int n, m, k;
+    printf("Please enter n.\n");
+    scanf("%d", &n);
+
+    printf("Please enter m.\n");
+    scanf("%d", &m);
+
+    float** a = generate_matrix(n, m);
+    printf("Original matrix:\n");
+    print_matrix(a, n, m);
+
+    a = add_min_sq_row(a, n, m);
+    printf("Result matrix:\n");
+    print_matrix(a, n + 1, m);
+}
+
+int main() {
+//    do_9_k();
+    do_9_sh();
+    return 0;
+}
