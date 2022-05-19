@@ -1,0 +1,232 @@
+//15.1
+#ifndef __RATIONAL__
+#define __RATIONAL__
+
+#include <iostream>
+#include <cmath>
+
+class Rational {
+private:
+    int nom;
+    unsigned denom;
+
+public:
+    Rational() {
+        nom = 1;
+        denom = 1U;
+    }
+    Rational(int x, unsigned y) :nom(x), denom(y) {
+        reduce();
+    }
+
+    void output();
+    int input();
+
+    int setNom(int x) {
+        nom = x;
+        return 0;
+    }
+    int setDenom(unsigned y) {
+        if (y != 0) {
+            denom = y;
+            return 0;
+        }
+        return -1;
+    }
+
+    Rational add(const Rational& x); //x.add(y);
+    Rational mult(const Rational& x);
+
+    bool less(const Rational& x) {
+        return (nom * x.denom < denom* x.nom);
+    }
+
+    double compare(double z) {
+        return fabs(z - (nom + 0.) / denom);
+    }
+
+    static unsigned gcd(unsigned x, unsigned y);
+
+
+
+private:
+    void reduce();
+};
+
+
+#endif // __RATIONAL__ header
+void Rational::output() {
+    std::cout << nom << "/" << denom << "\n";
+}
+
+int Rational::input() {
+    std::cout << "Input nom:";
+    std::cin >> nom;
+    std::cout << "Input denom:";
+    std::cin >> denom;
+
+    reduce();
+
+    return 0;
+}
+
+Rational Rational::add(const Rational& x) {
+    int t = (int)(this->nom * x.denom + denom * x.nom);
+    unsigned y = x.denom * denom;
+    return Rational(t, y);
+}
+
+Rational Rational::mult(const Rational& x) {
+    int t = nom * x.nom;
+    unsigned y = x.denom * denom;
+    return Rational(t, y);
+}
+
+unsigned Rational::gcd(unsigned x, unsigned y) {
+    if (y == 0 || x == 0) return x + y;
+    if (x >= y) return gcd(x % y, y);
+    return gcd(y % x, x);
+}
+
+void Rational::reduce() {
+
+    int nsd;
+    if (nom >= 0)
+        nsd = (int)gcd(nom, denom);
+    else
+        nsd = (int)gcd(-nom, denom);
+
+    nom /= nsd;
+    denom /= nsd;
+}
+
+
+Rational Hregory(double eps) {
+    Rational s;
+    int sign = -1;
+    for (int i = 2; eps * i * i < 1; i++) {
+        Rational tmp;
+        tmp.setNom(sign);
+        sign = -sign;
+        tmp.setDenom(i * i);
+        s = s.add(tmp);
+    }
+    return s;
+}
+
+
+int main() {
+    Rational r1, r2(2, 3);
+    r1.input();
+
+    Rational r3 = r1.add(r2);
+    Rational r4 = r1.mult(r2);
+    r3.output();
+    r4.output();
+    unsigned p = Rational::gcd(60, 35);
+    std::cout << p;
+    //r4.reduce();
+/*
+    Rational mas[5];
+    for(int i=0;i<5;++i){
+        mas[i].input();
+    }
+    Rational minRat;
+    minRat = mas[0];
+    for(int i=1;i<5;i++){
+        //if(mas[i]<minRat){
+        if(mas[i].less(minRat)){
+            minRat = mas[i];
+        }
+    }
+    minRat.show();	*/
+    Rational q = Hregory(0.01);
+    q.output();
+    std::cout << q.compare(3.14 * 3.14 / 12.0);
+}
+
+
+
+
+
+
+//15.2
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+#include <string>
+
+#include "Point.hpp"
+
+int Point::count = 0;
+
+double dist(const Point& z) {
+    return sqrt(z.x);
+}
+
+
+int main(int argc, char** argv) {
+
+    std::string buf;
+    Point pt;
+    Point fstPt;
+    Point prevPt;
+    bool first = true;
+    double per = 0;
+
+    do {
+        std::cout << "Another point y/n?";
+        std::cin >> buf;
+        if (buf.length() > 0 && (buf[0] == 'y' || buf[0] == 'Y')) {
+            pt.input();
+            if (first) {
+                fstPt = pt;
+            }
+            else {
+                per += prevPt.dist(pt);
+            }
+            first = false;
+            prevPt = pt;
+        }
+        if (buf.length() > 0 && (buf[0] == 'n' || buf[0] == 'N')) {
+            break;
+        }
+
+    } while (true);
+
+    per += prevPt.dist(fstPt);
+    std::cout << "N of vertixes:" << Point::counter() << "\n";
+    std::cout << "Perimeter" << per;
+
+    return 0;
+
+}
+
+
+//15.3
+#ifndef _POLINOM_H_
+#define _POLINOM_H_
+
+typedef double PTYPE;
+
+class Polinom{
+    size_t n;
+    PTYPE* a;
+public:
+    POlinom() { n = 0; }
+    Polinom(size_t n, PTYPE* arr);
+    ~Polinom();
+    Polinom(const Polinom& p);
+    Polinom& operator = (const Polinom& P);
+
+    int input();
+    void output();
+    int set(size_t k, PTYPE b);
+    PTYPE get(size_t k);
+
+    friend int saveFile(const char* fname, const Polinom& P);
+    friend int readFile(const char* fname, Polinom& P);
+
+};
+
+#endif
