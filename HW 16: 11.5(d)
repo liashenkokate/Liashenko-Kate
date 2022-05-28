@@ -1,0 +1,56 @@
+
+//11.5(д)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+void func(const char* fname, unsigned i) {
+    FILE* f = fopen(fname, "r");
+    FILE* temp = fopen("text1.txt", "w");
+    unsigned idx;
+    unsigned m;
+    unsigned j;
+    double coef;
+    double deg;
+    char c;
+
+    while (!feof(f)) {
+        scanf_s(f, "%u %u ", &idx, &m);
+
+        if (i != idx) {
+            printf(temp, "%u %u ", idx, m);
+            for (j = 0; j < m - 1; j++) {
+                scanf_s(f, "(%lf,%lf) ", &coef, &deg);
+                printf(temp, "(%g,%g) ", coef, deg);
+            }
+            scanf_s(f, "(%lf,%lf)\n", &coef, &deg);
+            printf(temp, "(%g,%g)\n", coef, deg);
+        }
+        else
+            for (c = fgetc(f); c != '\n'; c = fgetc(f));
+    }
+    fclose(f);
+    fclose(temp);
+    f = fopen(fname, "w");
+    temp = fopen("text2.txt", "r");
+    while (!feof(temp)) {
+        scanf_s(temp, "%u %u ", &idx, &m);
+        printf(f, "%u %u ", idx, m);
+        for (j = 0; j < m - 1; j++) {
+            scanf_s(temp, "(%lf,%lf) ", &coef, &deg);
+            printf(f, "(%g,%g) ", coef, deg);
+        }
+        scanf_s(temp, "(%lf,%lf)\n", &coef, &deg);
+        printf(f, "(%g,%g)\n", coef, deg);
+    }
+    fclose(f);
+    fclose(temp);
+    remove("text1.txt");
+}
+int main() {
+    const char* fname = "text.txt";
+    unsigned i;
+    printf("Index: ");
+    scanf("%u", &i);
+    func(fname, 2);
+    return 0;
+}
