@@ -1,0 +1,176 @@
+//CW 20
+
+//
+#pragma once
+#ifndef AQUAINTED_H
+#define  AQUAINTED_H
+
+#include <string>
+
+#ifndef PERSON_H;
+#define  PERSON_H;
+
+class Person
+{
+    std::string name;
+    unsigned byear;
+public:
+    Person();
+    Person(std::string s, unsigned y, unsigned byeat);
+    ~Person();
+    int input();
+    void show();
+    std::string getName() {
+        return name;
+    }
+};
+
+#endif 
+
+class Aquainted : public Person
+{
+    std::string phone;
+public:
+    Aquainted();
+    Aquainted(const std::string& s, unsigned y, const std::string& ph) :
+        Person(s, y) {
+        phone = ph;
+
+    };
+    ~Aquainted();
+    int input();
+
+    void setPhone(std::string ph);
+    std::string getPhone() {
+        return phone;
+    }
+
+};
+#endif
+
+#pragma once
+#ifndef AQUAINTED_H
+#define  AQUAINTED_H
+
+#include <string>
+#include "Person.h"
+class Aquainted : public Person
+{
+    std::string phone;
+public:
+    Aquainted();
+    Aquainted(const std::string& s, unsigned y, const std::string& ph) :
+        Person(s, y) {
+        phone = ph;
+
+    };
+    Aquainted();
+    int input();
+    void setPhone(std::string ph);
+    std::string getPhone() {
+        return phone;
+    }
+
+};
+#endif  
+
+int Aquainted::input() {
+    Person::input();
+    std::cout << "Phone:";
+    std::cin >> phone;
+    return 0;
+}
+
+
+
+//
+#ifndef PHONEBOOK_H
+#define PHONEBOOK_H
+#include <cstdlib>
+class Phonebook
+{
+    size_t n;
+    Aquainted records[100];
+public:
+    Phonebook();
+    Phonebook(std::string s, unsigned y, unsigned byeat);
+    ~Phonebook();
+
+    int addRecord(Aquainted& ref);
+    std::string findByName(const std::string& name);
+    int editPhone(const std::string& name, const std::string& phone);
+
+    int input();
+    void show();
+};
+#endif 
+
+int main(int argc, char** argv) {
+
+    Phonebook pb;
+
+    size_t n;
+    std::cout << "N: ";
+    std::cin >> n;
+    Aquainted aq;
+    for (size_t i = 0; i < n; i++) {
+        aq.input();
+        pb.addRecord(aq);
+    }
+
+    std::string name;
+    std::cout << "Name to find:";
+    std::cin >> name;
+
+    std::cout << "Tel is:" << pb.findByName(name) << "\n";
+    return 0;
+
+}
+
+
+//
+#pragma once
+#include <iostream>
+#include <exception>
+#include <cmath>
+
+struct division_by_zero_exception : public std::exception {
+    const char* what() const {
+        return "Division by zero";
+    }
+};
+
+using rational_exception = division_by_zero_exception;
+
+class Rational {
+private:
+    int nominator;
+    unsigned denominator;
+
+    void cut();
+public:
+    Rational();
+    Rational(int n, unsigned d) throw(division_by_zero_exception);
+
+    int get_nominator() const;
+    void set_nominator(int nominator);
+
+    int get_denominator() const;
+    void set_denominator(unsigned denominator) throw(division_by_zero_exception);
+
+    double value() const;
+
+    Rational operator+(const Rational& right);
+    Rational operator-(const Rational& right);
+    Rational operator*(const Rational& right);
+
+    bool operator<(const Rational& right);
+    bool operator>(const Rational& right);
+    bool operator==(const Rational& right);
+    bool operator!=(const Rational& right);
+
+    friend std::ostream& operator<<(std::ostream& out, const Rational& rational);
+    friend std::istream& operator>>(std::istream& in, Rational& rational) throw(division_by_zero_exception);
+};
+
+Rational abs(const Rational& right);
