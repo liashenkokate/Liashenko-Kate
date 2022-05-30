@@ -1,0 +1,136 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Person {
+protected:
+    string name;
+
+public:
+    Person(string name) {
+        this->name = name;
+    }
+
+    string getName() {
+        return name;
+    }
+};
+
+class Student : public Person {
+private:
+    vector<int> scale100Marks;
+
+    int getScale5Mark(int scale100Mark) {
+        return scale100Mark < 75 ? 3 : scale100Mark < 90 ? 4 : 5;
+    }
+
+    float getAverage(vector<int> numbers) {
+        float sum = 0;
+        for (int number: numbers) {
+            sum += number;
+        }
+        return sum / numbers.size();
+    }
+
+public:
+    Student(string name, vector<int> scale100Marks) : Person(name) {
+        this->scale100Marks = scale100Marks;
+    }
+
+    vector<int> getScale100Marks() {
+        return scale100Marks;
+    }
+
+    vector<int> getScale5Marks() {
+        vector<int> scale5Marks;
+        for (int scale100Mark: scale100Marks) {
+            scale5Marks.push_back(getScale5Mark(scale100Mark));
+        }
+        return scale5Marks;
+    }
+
+    float getAverageMarkScale100() {
+        return getAverage(scale100Marks);
+    }
+
+    float getAverageMarkScale5() {
+        return getAverage(getScale5Marks());
+    }
+};
+
+vector<Student> findWithScholarshipNewSystem(vector<Student> students) {
+    vector<pair<Student, float>> studentAverages;
+    for (Student student: students) {
+        studentAverages.push_back(pair<Student, float>(student, student.getAverageMarkScale100()));
+    }
+    sort(studentAverages.begin(), studentAverages.end(),
+         [](pair<Student, float> &left, pair<Student, float> &right) {
+             return left.second > right.second;
+         });
+
+    int scholarshipCount = students.size() * 0.4;
+    vector<Student> studentsWithScholarship;
+    for (int i = 0; i < scholarshipCount; i++) {
+        studentsWithScholarship.push_back(studentAverages[i].first);
+    }
+    return studentsWithScholarship;
+}
+
+vector<Student> findWithScholarshipOldSystem(vector<Student> &students) {
+    vector<Student> studentsWithScholarship;
+    for (Student student: students) {
+        if (student.getAverageMarkScale5() >= 4) {
+            studentsWithScholarship.push_back(student);
+        }
+    }
+    return studentsWithScholarship;
+}
+
+void do4() {
+    int s, m;
+    cout << "Enter number of students: " << endl;
+    cin >> s;
+    cout << "Enter number of subjects: " << endl;
+    cin >> m;
+
+    vector<Student> students;
+    for (int i = 0; i < s; i++) {
+        string name;
+        cout << "Enter student name: " << endl;
+        cin >> name;
+
+        vector<int> marks;
+        for (int j = 0; j < m; j++) {
+            while (true) {
+                int mark;
+                cout << "Enter mark " << (j + 1) << " for " << name << endl;
+                cin >> mark;
+                if (mark < 60 || mark > 100) {
+                    cout << "Mark should be between 60 and 100" << endl;
+                } else {
+                    marks.push_back(mark);
+                    break;
+                }
+            };
+        }
+        students.push_back(Student(name, marks));
+    }
+
+    vector<Student> studentsWithScholarshipNewSystem = findWithScholarshipNewSystem(students);
+    cout << endl << "Receive scholarship by new system:" << endl;
+    for (Student student: studentsWithScholarshipNewSystem) {
+        cout << student.getName() << endl;
+    }
+
+    vector<Student> studentsWithScholarshipOldSystem = findWithScholarshipOldSystem(students);
+    cout << endl << "Receive scholarship by old system:" << endl;
+    for (Student student: studentsWithScholarshipOldSystem) {
+        cout << student.getName() << endl;
+    }
+}
+
+int main() {
+    do4();
+    return 0;
+}
