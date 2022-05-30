@@ -1,0 +1,271 @@
+#include <iostream>
+#include <vector>
+
+#define INF "inf"
+
+using namespace std;
+
+template<class F>
+class Interval : protected pair<F, F> {
+private:
+    bool firstIncluded = false;
+    bool secondIncluded = false;
+    bool firstInf = false;
+    bool secondInf = false;
+    bool empty = false;
+
+    static F* getMaxStart(vector<Interval<F>>& intervals) {
+        F *max = NULL;
+        for (Interval<F> &interval: intervals) {
+            if (interval.firstInf) {
+                continue;
+            }
+            if (max == NULL || *max < interval.first) {
+                max = &interval.first;
+            }
+        }
+        return max;
+    }
+
+    static F *getMinEnd(vector<Interval<F>>& intervals) {
+        F *min = NULL;
+        for (Interval<F>& interval: intervals) {
+            if (interval.secondInf) {
+                continue;
+            }
+            if (min == NULL || *min > interval.second) {
+                min = &interval.second;
+            }
+        }
+        return min;
+    }
+
+    static bool isStartIncluded(vector<Interval<F>>& intervals, F start) {
+        for (Interval<F> interval: intervals) {
+            if (!interval.firstInf && interval.first == start && !interval.firstIncluded) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static bool isEndIncluded(vector<Interval<F>>& intervals, F end) {
+        for (Interval<F> interval: intervals) {
+            if (!interval.secondInf && interval.second == end && !interval.secondIncluded) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static Interval<F> create(F* first, F* second, bool firstIncluded, bool secondIncluded, bool firstInf, bool secondInf) {
+        if (firstInf && secondInf) {
+            return Interval<F>(true);
+        }
+        if (firstInf) {
+            return Interval<F>(INF, *second, secondIncluded);
+        }
+        if (secondInf) {
+            return Interval<F>(*first, INF, firstIncluded);
+        }
+        if (*first > *second || *first == *second && (!firstIncluded || !secondIncluded)) {
+            return Interval<F>(false);
+        }
+        return Interval<F>(*first, *second, firstIncluded, secondIncluded);
+    }
+
+public:
+    Interval(bool all) {
+        if (all) {
+            this->firstInf = true;
+            this->secondInf = true;
+        } else {
+            this->empty = true;
+        }
+    }
+
+    Interval(F x, F y, bool firstIncluded, bool secondIncluded) {
+        this->first = x;
+        this->second = y;
+        this->firstIncluded = firstIncluded;
+        this->secondIncluded = secondIncluded;
+    }
+
+    Interval(F x, string y, bool firstIncluded) {
+        this->first = x;
+        this->secondInf = true;
+        this->firstIncluded = firstIncluded;
+    }
+
+    Interval(string x, F y, bool secondIncluded) {
+        this->second = y;
+        this->firstInf = true;
+        this->secondIncluded = secondIncluded;
+    }
+
+    Interval<F> getIntersection(Interval<F> other) {
+        vector<Interval<F>> intervals{*this, other};
+        return getIntersectionMany(intervals);
+    }
+
+    static Interval<F> getIntersectionMany(vector<Interval<F>>& intervals) {
+        F *first, *second;
+        bool firstIncluded = false, secondIncluded = false, firstInf = false, secondInf = false;
+
+        F *maxStart = getMaxStart(intervals);
+        F *minEnd = getMinEnd(intervals);
+        if (maxStart == NULL) {
+            firstInf = true;
+        } else {
+            first = maxStart;
+            firstIncluded = isStartIncluded(intervals, *first);
+        }
+        if (minEnd == NULL) {
+            secondInf = true;
+        } else {
+            second = minEnd;
+            secondIncluded = isEndIncluded(intervals, *second);
+        }
+
+        return create(first, second, firstIncluded, secondIncluded, firstInf, secondInf);
+    }
+
+    Interval<F> getUnion(Interval<F> other) {
+        vector<Interval<F>> intervals{*this, other};
+        Interval<F> intersection = getIntersectionMany(intervals);
+        if (intersection.empty) {
+            return Interval<F>(false);
+        }
+
+        F *first, *second;
+        bool firstIncluded = false, secondIncluded = false, firstInf = false, secondInf = false;
+        if (this->firstInf || other.firstInf) {
+            firstInf = true;
+        } else {
+            first = this->first < other.first ? &this->first : &other.first;
+            firstIncluded = this->first < other.first ? this->firstIncluded : this->first > other.first ? other.firstIncluded :
+                    (this->firstIncluded || other.firstIncluded);
+        }
+        if (this->secondInf || other.secondInf) {
+            secondInf = true;
+        } else {
+            second = this->second > other.second ? &this->second : &other.second;
+            secondIncluded = this->second > other.second ? this->secondIncluded : this->second < other.second ? other.secondIncluded :
+                    (this->secondIncluded || other.secondIncluded);
+        }
+
+        return create(first, second, firstIncluded, secondIncluded, firstInf, secondInf);
+    }
+
+    void print() {
+        if (this->empty) {
+            cout << "()" << endl;
+            return;
+        }
+        cout << (this->firstIncluded ? "[" : "(") << (this->firstInf ? INF : to_string(this->first)) << ", " <<
+             (this->secondInf ? INF : to_string(this->second)) << (this->secondIncluded ? "]" : ")") << endl;
+    }
+};
+
+// tests
+void t1() {
+    cout << endl << "t1 intersection:" << endl;
+    Interval<float> a(3, 7, true, true);
+    a.print();
+    Interval<float> b(4, 9, true, true);
+    b.print();
+    Interval<float> it = a.getIntersection(b);
+    it.print();
+}
+
+void t2() {
+    cout << endl << "t2 intersection:" << endl;
+    Interval<float> a(2, "inf", true);
+    a.print();
+    Interval<float> b(-4, 6, true, false);
+    b.print();
+    Interval<float> it = a.getIntersection(b);
+    it.print();
+}
+
+void t3() {
+    cout << endl << "t3 intersection:" << endl;
+    Interval<float> a(-1, "inf", false);
+    a.print();
+    Interval<float> b("inf", 12, true);
+    b.print();
+    Interval<float> it = a.getIntersection(b);
+    it.print();
+}
+
+void t4() {
+    cout << endl << "t4 intersection:" << endl;
+    Interval<float> a(-1, 6, true, true);
+    a.print();
+    Interval<float> b(8, 12, true, true);
+    b.print();
+    Interval<float> it = a.getIntersection(b);
+    it.print();
+}
+
+void t5() {
+    cout << endl << "t5 intersection many:" << endl;
+    Interval<float> a(-5, 18, true, true);
+    a.print();
+    Interval<float> b(-2, "inf", true);
+    b.print();
+    Interval<float> c(-4, 15, true, false);
+    c.print();
+    vector<Interval<float>> intervals{a, b, c};
+    Interval<float> it = Interval<float>::getIntersectionMany(intervals);
+    it.print();
+}
+
+void t6() {
+    cout << endl << "t6 union:" << endl;
+    Interval<float> a(3, 7, true, true);
+    a.print();
+    Interval<float> b(4, 9, true, true);
+    b.print();
+    Interval<float> it = a.getUnion(b);
+    it.print();
+}
+
+void t7() {
+    cout << endl << "t7 union:" << endl;
+    Interval<float> a(2, "inf", true);
+    a.print();
+    Interval<float> b(-4, 6, true, false);
+    b.print();
+    Interval<float> it = a.getUnion(b);
+    it.print();
+}
+
+void t8() {
+    cout << endl << "t8 union:" << endl;
+    Interval<float> a(-1, "inf", false);
+    a.print();
+    Interval<float> b("inf", 12, true);
+    b.print();
+    Interval<float> it = a.getUnion(b);
+    it.print();
+}
+
+void do8() {
+    // intersection
+    t1();
+    t2();
+    t3();
+    t4();
+    t5();
+
+    // union
+    t6();
+    t7();
+    t8();
+}
+
+int main() {
+    do8();
+    return 0;
+}
