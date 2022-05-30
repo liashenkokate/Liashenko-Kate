@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <cmath>
+
+using namespace std;
+
+int getFirstDigit(float n) {
+    int d = (int) abs(n);
+    int res;
+    do {
+        res = d % 10;
+        d /= 10;
+    } while (d != 0);
+    return res;
+}
+
+float getSum(vector<float> numbers) {
+    float sum = 0;
+    for (float n: numbers) {
+        sum += n;
+    }
+    return sum;
+}
+
+void do18() {
+    int n;
+    cout << "Enter numbers count:" << endl;
+    cin >> n;
+    vector<float> numbers;
+    cout << "Enter numbers:" << endl;
+    for (int i = 0; i < n; i++) {
+        float c;
+        cin >> c;
+        numbers.push_back(c);
+    }
+
+    map<int, vector<float>> digitToNumbers;
+    for (float number: numbers) {
+        int digit = getFirstDigit(number);
+        if (digitToNumbers.find(digit) == digitToNumbers.end()) {
+            digitToNumbers[digit] = vector<float>();
+        }
+        digitToNumbers[digit].push_back(number);
+    }
+
+    cout <<  endl << "Result:" << endl;
+    for (auto const& digitToNumber : digitToNumbers) {
+        vector<float> nWithoutFirst(digitToNumber.second.begin() + 1, digitToNumber.second.end());
+        cout << digitToNumber.first << ": "  << getSum(nWithoutFirst) << endl;
+    }
+}
+
+int main() {
+    do18();
+    return 0;
+}
