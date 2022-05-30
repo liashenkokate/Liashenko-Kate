@@ -1,0 +1,546 @@
+//CW 21
+
+//17.1
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+#include <exception>
+using namespace std;
+
+class RationalError : public logic_error {
+public:
+    RationalError(string message) : logic_error(message) {}
+};
+
+class ZeroDenominatorError : public RationalError {
+public:
+    ZeroDenominatorError() : RationalError("Zero denominator!") {}
+};
+
+class NegativeDenominatorError : public RationalError {
+public:
+    NegativeDenominatorError(int64_t d) :
+        RationalError("Negative denominator! " + to_string(d)) {}
+};
+
+class Rational {
+private:
+    int64_t numer;
+    int64_t denom;
+
+    void to_irreducible() {
+        int64_t d = gcd(abs(numer), denom);
+        numer /= d;
+        denom /= d;
+    }
+
+    void initialize(int64_t numer, int64_t denom) {
+        if (denom == 0)
+            throw ZeroDenominatorError();
+        if (denom < 0)
+            throw NegativeDenominatorError(denom);
+        this->numer = numer;
+        this->denom = denom;
+        to_irreducible();
+    }
+
+public:
+    Rational(int64_t numer, int64_t denom) {
+        initialize(numer, denom);
+    }
+    Rational() : Rational(1, 1) {}
+    Rational(int64_t number) : Rational(number, 1) {}
+    Rational(const Rational& a) : Rational(a.numer, a.denom) {}
+
+    Rational(const string& random) {
+        int sign = rand() % 2 ? 1 : -1;
+        initialize(sign * rand() % 100, rand() % 100 + 1);
+    }
+
+    void print(ostream& out = cout) {
+        out << numer << "/" << denom;
+    }
+
+    void input(istream& inp = cin) {
+        int64_t numer, denom;
+        inp >> numer;
+        inp.ignore(256, '/');
+        inp >> denom;
+        initialize(numer, denom);
+    }
+
+    void add(const Rational& other) {
+        numer = numer * other.denom + other.numer * denom;
+        denom = denom * other.denom;
+        to_irreducible();
+    }
+
+    void multiply(const Rational& other) {
+        numer = numer * other.numer;
+        denom = denom * other.denom;
+        to_irreducible();
+    }
+
+    Rational operator+() { return Rational(*this); }
+    friend Rational operator-(const Rational& self) { return Rational(-self.numer, self.denom); }
+
+    Rational operator+(const Rational& other) {
+        Rational result(*this);
+        result.add(other);
+        return result;
+    }
+
+    Rational operator-(const Rational& other) {
+        Rational result(*this);
+        result.add(-other);
+        return result;
+    }
+
+    Rational operator*(const Rational& other) {
+        Rational result(*this);
+        result.multiply(other);
+        return result;
+    }
+
+    Rational& operator+=(const Rational& other) { add(other); return *this; }
+    Rational& operator-=(const Rational& other) { add(-other); return *this; }
+    Rational& operator*=(const Rational& other) { multiply(other); return *this; }
+    bool operator<(const Rational& other) { return numer * other.denom < other.numer* denom; }
+    bool operator<(const int other) { return numer < denom* other; }
+    bool operator>(const Rational& other) { return numer * other.denom > other.numer * denom; }
+    bool operator>(const int other) { return numer > denom * other; }
+    bool operator<=(const Rational& other) { return numer * other.denom <= other.numer * denom; }
+    bool operator>=(const Rational& other) { return numer * other.denom >= other.numer * denom; }
+    bool operator==(const Rational& other) { return numer == other.numer && denom == other.denom; }
+    bool operator!=(const Rational& other) { return numer != other.numer || denom != other.denom; }
+    double to_double() { return (double)numer / denom; }
+
+    static int64_t gcd(int64_t a, int64_t b) {
+        if (b == 0)
+            return a;
+        else
+            return gcd(b, a % b);
+    }
+
+    static int64_t abs(int64_t a) {
+        return a > 0 ? a : -a;
+    }
+
+    friend Rational abs(Rational& a) {
+        return a > 0 ? +a : -a;
+    }
+
+    friend ostream& operator<<(ostream& out, Rational& a) {
+        a.print(out);
+        return out;
+    }
+
+    friend istream& operator>>(istream& inp, Rational& a) {
+        a.input(inp);
+        return inp;
+    }
+};
+
+Rational& min(Rational* arr, int n) {
+    Rational& _min = arr[0];
+
+    for (int i = 1; i < n; i++) {
+        if (arr[i] < _min)
+            _min = arr[i];
+    }
+    return _min;
+}
+
+int main() {
+    srand(time(NULL));
+    int n;
+    cin >> n;
+    Rational* arr = new Rational[n];
+    int i = 0;
+
+    while (i < n) {
+        try {
+            cin >> arr[i];
+        }
+        catch (RationalError& e) {
+            cout << e.what() << endl;
+            cout << "Try again" << endl;
+            continue;
+        }
+        catch (exception& e) {
+            cout << e.what() << endl;
+            break;
+        }
+        catch (...) {
+            cout << "Unknown exception was caught" << endl;
+            break;
+        }
+        i++;
+    }
+
+    for (i = 0; i < n; i++)
+        cout << arr[i] << ' ';
+    delete arr[];
+    return 0;
+
+}
+
+
+
+
+//17.2
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+class Person
+{
+protected:
+    char gender;
+    string name;
+    unsigned age;
+public:
+    Person() {}
+    Person(string str, char c, unsigned n) : name(str), gender(c), age(n) {}
+
+    void input()
+    {
+        cout << "name: ";
+        cin >> name;
+        cout << "gender: ";
+        cin >> gender;
+        cout << "age: ";
+        cin >> age;
+    }
+
+    void show()
+    {
+        cout << "name: " << name << endl;
+        cout << "gender: " << gender << endl;
+        cout << "age: " << age << endl;
+    }
+
+    friend ostream& operator<<(ostream& ost, const Person& h) {
+        const char* gen = h.gender ? "Male" : "Female";
+        ost << h.name << ", " << h.age << "," << gen << endl;
+    }
+};
+
+class Student : virtual public Person
+{
+    int year;
+    string group;
+    string univ;
+public:
+
+    void input()
+    {
+        Person::input();
+        cout << "year: ";
+        cin >> year;
+        cout << "group: ";
+        cin >> group;
+        cout << "univ: ";
+        cin >> univ;
+    }
+
+    void show()
+    {
+        Person::show();
+        cout << "year: " << year << endl;
+        cout << "group: " << group << endl;
+        cout << "univ: " << univ << endl;
+    }
+};
+
+
+
+class Lecturer : virtual public Person {
+
+    string VUZ;
+
+public:
+    Lecturer() {};
+
+    Lecturer(string s, unsigned x, bool g, string V) :Person(s, x, g) {
+        VUZ = V;
+    }
+
+    friend ostream& operator<<(ostream& ost, const Lecturer& h) {
+        const char* gen = h.gender ? "Male" : "Female";
+        ost << h.name << ", " << h.age << "," << gen << endl << h.VUZ << endl;
+    }
+
+    bool input() {
+
+        string pib; // char PIB[20];
+        unsigned ag;
+        bool gend;
+        string VU;
+        unsigned char kur;
+        char grup[3];
+
+        cout << "PIB:";
+        cin >> pib;
+        cout << "age:";
+        cin >> ag;
+        cout << "Male or Female? M/F?";
+        string sex;
+        cin >> sex;
+        if (tolower(sex[0]) == 'f') {
+            gend = false;
+        }
+        else {
+            gend = true;
+        }
+
+        cout << "Vuz";
+        cin >> VU;
+
+        set(pib, ag, gend, VU);
+        return true;
+    }
+
+
+    void set(string s, unsigned x, bool g, string V) {
+        name = s;
+        age = x;
+        gender = g;
+        VUZ = V;
+    }
+
+
+    void show() {
+        cout << *this;
+    }
+
+};
+
+
+class Aspirant : public Student, Lecturer {
+
+    float mark;
+
+    string VUZ2;
+
+public:
+    Aspirant() {};
+
+    /*Aspirant(string s, unsigned x, bool g, string V, float m){
+       set(s,x,g,V,m);
+    }*/
+
+    Aspirant(string s, unsigned x, bool g, string V, float m) :Person(s, x, g) {
+        set(s, x, g, V, m);
+    }
+
+
+    void set(string s, unsigned x, bool g, string V, float m) {
+        name = s;
+        age = x;
+        gender = g;
+        VUZ2 = V;
+        mark = m;
+
+    }
+
+    friend ostream& operator<<(ostream& ost, const Aspirant& h) {
+        const char* gen = h.gender ? "Male" : "Female";
+        ost << h.name << ", " << h.age << "," << gen << " Mark " << h.mark << endl;
+    }
+
+
+    // method of input for class Student
+    void input() {
+
+        string VU;
+        unsigned char kur;
+        char grup[3];
+
+        Person::input();
+        cout << "Vuz";
+        cin >> VU;
+
+        VUZ2 = VU;
+    }
+
+
+    void show() {
+        cout << *this;
+    }
+
+};
+
+
+
+int main() {
+    int N = 3;
+
+    Person* m1[10];
+
+    //int N=2;
+    for (int i = 0; i < N; ++i) {
+        cout << "Lecturer or student or aspirant l/s/a?";
+        string str;
+        cin >> str;
+        if (tolower(str[0]) == 'l') {
+            Lecturer* l = new Lecturer();
+            l->input();
+
+            m1[i] = l;
+        }
+        else if (tolower(str[0]) == 'a') {
+            Aspirant* l = new Aspirant();
+            l->input();
+
+            m1[i] = l;
+        }
+        else {
+            Student* l = new Student;
+            l->input();
+
+            m1[i] = l;
+        }
+    }
+
+    for (int i = 0; i < N; ++i) {
+        cout << (*m1[i]); //для Хумана
+        m1[i]->show();
+    }
+
+
+
+
+//18.1
+#include <iostream>
+#include <tchar.h>
+
+
+    using namespace std;
+
+    int _tmain(int argc, _TCHAR * argv[])
+    {
+        setlocale(0, "rus");
+        int* T, * C, N, j = 1, min;
+        cout << "input n" << endl;
+        cin >> N;
+        T = new int[N];
+        C = new int[N];
+        for (int i = 0; i < N; i++)
+        {
+            cout << "Input time " << j;
+            cin >> T[i];
+            j++;
+        }
+        min = 1000;
+        for (int i = 0; i < N; i++)
+        {
+            if (T[i] < min)
+            {
+                min = T[i];
+                j = i + 1;
+            }
+        }
+        cout << "least time " << j << " time:" << min << " min" << endl;
+        C[0] = T[0];
+        cout << "1st in queue was on :" << C[0] << endl;
+        j = 2;
+        for (int i = 1; i < N; i++)
+        {
+            C[i] = T[i] + C[i - 1];
+            cout << j << " in queue was on :" << C[i] << "min." << endl;
+            j++;
+        }
+        cin.get();
+        cin.get();
+        return 0;
+    }
+
+
+
+//18.2
+#include <iostream>
+#include <stack>
+using namespace std;
+
+
+template<class T>
+struct Node {
+    Node<T>* next;
+    T item;
+};
+
+
+template<class T>
+class MyStack {
+
+private:
+
+    int _size;
+    Node<T>* head;
+
+public:
+
+    MyStack() : _size(0), head(nullptr) {}
+
+    ~MyStack() {
+        while (!empty())
+            pop();
+    }
+
+    bool empty() { return head == nullptr; }
+    int size() { return _size; }
+
+    T top() {
+        if (empty())
+            throw logic_error("Stack is empty");
+        return head->item;
+    }
+
+    void pop() {
+        if (empty())
+            throw logic_error("Stack is empty");
+        Node<T>* node = head;
+        head = node->next;
+        delete node;
+        _size--;
+    }
+
+    void push(T item) {
+        Node<T>* node = new Node<T>();
+        node->item = item;
+        node->next = head;
+        head = node;
+        _size++;
+    }
+
+};
+int main() {
+    stack<int> stl_stack;
+    MyStack<int> my_stack;
+
+    for (int i = 0; i < 10; i++) {
+        stl_stack.push(i);
+        cout << stl_stack.top() << ends;
+    }
+    cout << endl;
+    for (int i = 0; i < 10; i++) {
+        my_stack.push(i);
+        cout << my_stack.top() << ends;
+    }
+    cout << endl << endl;
+
+    while (!stl_stack.empty()) {
+        cout << stl_stack.top() << ends;
+        stl_stack.pop();
+    }
+    cout << endl;
+    while (!my_stack.empty()) {
+        cout << my_stack.top() << ends;
+        my_stack.pop();
+    }
+    return 0;
+}
