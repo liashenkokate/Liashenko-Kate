@@ -1,0 +1,168 @@
+//13.1
+#include <iostream>
+#include <string>
+
+std::string ffind(std::string line) {
+    int start = line.find(":") + 1;
+    int endline = line.find(",", start);
+    std::string res = line.substr(start, endline - start);
+    return res;
+}
+
+int main() {
+    std::string str = "1: 2 3 4 56, 23";
+    std::cout << ffind(str) << std::endl;
+}
+
+
+//13.2
+#include <iostream>
+#include <string>
+
+
+std::string newTwoDots(std::string line) {
+    int firstdot = line.find(".");
+    int secdot = line.find(".", firstdot + 1);
+
+    if (firstdot == std::string::npos && secdot == std::string::npos) {
+        int spaceend = line.find_first_not_of(" ");
+        line.erase(0, spaceend);
+        std::cout << "PRINTER1" << '\n';
+    }
+    else {
+        if (firstdot != std::string::npos && secdot == std::string::npos) {
+            line.erase(0, firstdot);
+            std::cout << "PRINTER2" << '\n';
+        }
+        else {
+            line.erase(firstdot, secdot - 1);
+            std::cout << "PRINTER3" << '\n';
+        }
+    }
+    return line;
+}
+
+int main() {
+    std::string str = "  Today.is a.good day";
+    std::cout << newTwoDots(str) << '\n';
+    str = "  Today.is a good day";
+    std::cout << std::endl << newTwoDots(str) << '\n';
+    str = "  Today is a good day";
+    std::cout << std::endl << newTwoDots(str) << '\n';
+}
+
+
+//13.3
+#include <iostream>
+#include <string>
+#include <sstream>
+using namespace std;
+
+string lastLetterEraser(string str) {
+    str += " ";
+
+    string res = "", w = "";
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == ' ' && str[i - 1] != ' ') {
+            res += w.substr(0, w.length() - 1) + " ";
+            w = "";
+        }
+        else {
+            w += str[i];
+        }
+    }
+    return res;
+}
+
+
+int main() {
+    string str = "adsd    gkif    howdy";
+    int space1 = str.find(' ');
+    if (space1 == -1) {
+        str.erase(str.length() - 1, str.length());
+        cout << str;
+    }
+    else {
+        cout << lastLetterEraser(str);
+    }
+
+}
+
+
+//13.5
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+
+bool checkTags(ifstream& f1, string openTD = "<td>", string closeTD = "</td>") {
+
+    int opentag = 0;
+    int closetag = 0;
+
+    string buf;
+    while (!f1.eof()) {
+        if (f1 >> buf) {
+            //cout<<buf<<"\n";
+            if (buf == openTD) {
+                //cout<<"TD!";
+                opentag++;
+            }
+            else if (buf == closeTD) {
+                //cout<<"DT!";
+                closetag++;
+            }
+            if (closetag > opentag) return false;
+        }
+        else {
+            break;
+        }
+    }
+    return closetag == opentag;
+}
+
+
+
+int main() {
+
+    const char* fname = "t63.txt";
+    ifstream f1(fname);
+
+    if (f1.bad()) {
+        cerr << "error opening" << fname << endl;
+    }
+
+    cout << "\n Check " << boolalpha << checkTags(f1);
+
+    f1.close();
+
+}
+
+
+
+//13.6
+#include <iostream>
+#include <string>
+using namespace std;
+
+string replaceLetters(string s) {
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == 'z') {
+            s[i] = 'a';
+        }
+        else {
+            s[i] = (char)(s[i] + 1);
+        }
+    }
+    return s;
+}
+
+int main() {
+    string s = "abcdezFGHa";
+    cout << replaceLetters(s);
+    return 0;
+}
+
+
+
