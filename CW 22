@@ -1,0 +1,276 @@
+//CW 22
+
+//19.1
+#include <iostream>
+#include <queue>
+
+int main() {
+    int n;
+
+    std::cout << "Enter number of customers:";
+    std::cin >> n;
+
+    std::queue<int> t;
+    int time, i;
+
+    for (i = 0; i < n; ++i) {
+        std::cout << "Enter time of customer #" << i << ":";
+        std::cin >> time;
+
+        t.push(time);
+    }
+
+    std::queue<int> c;
+    int total_time = 0;
+    int k = 0, tmp, t2;
+
+    while (!t.empty()) {
+        tmp = t.front();
+
+        t.pop();
+
+        total_time += tmp;
+        t2 = (total_time > k) ? (total_time - k) : 0;
+        ++k;
+
+        c.push(t2);
+    }
+
+    i = 0;
+
+    while (!c.empty()) {
+        std::cout << "Customer " << i << " waited " << c.front() << ";\n";
+
+        c.pop();
+
+        ++i;
+    }
+}
+
+
+
+
+
+//19.2
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <iterator>
+#include <numeric>
+
+int main() {
+    unsigned n, dim;
+
+    std::cout << "Enter count of vectors: ";
+    std::cin >> n;
+    std::cout << "Enter dimension for each vector: ";
+    std::cin >> dim;
+
+    std::vector<std::vector<double>> vectors;
+    std::vector<double> v(n), norms;
+    size_t i, j;
+
+    for (i = 0; i < n; i++) {
+        std::cout << "\nEntering vector #" << i + 1 << ":\n";
+
+        for (j = 0; j < dim; j++) {
+            std::cout << "Enter coord #" << j + 1 << ": ";
+            std::cin >> v[j];
+        }
+
+        norms.push_back(sqrt(std::inner_product(v.begin(), v.end(), v.begin(), 0)));
+    }
+
+    for (i = 0; i < n; i++)
+        std::cout << "Norm of vector #" << i + 1 << ": " << std::defaultfloat << norms[i] << '\n';
+}
+
+
+
+
+//19.3
+#pragma once
+#include <iostream>
+#include <fstream>
+#include <initializer_list>
+#include <list>
+#include <algorithm>
+#include <vector>
+#include <stdexcept>
+#include <type_traits>
+
+template <class T>
+class Poly {
+private:
+    std::list<T> coeffs;
+public:
+    Poly();
+    Poly(const std::initializer_list<T>& lst);
+
+    unsigned get_order() const;
+
+    void output();
+
+    Poly<T> operator+(const Poly<T>& right);
+    Poly<T> operator-(const Poly<T>& right);
+    Poly<T> operator*(const Poly<T>& right);
+};
+
+template<class T>
+inline Poly<T>::Poly() {
+    coeffs.push_back(0);
+}
+
+template<class T>
+inline Poly<T>::Poly(const std::initializer_list<T>& lst) {
+    std::copy(lst.begin(), lst.end(), std::back_insert_iterator<std::list<T>>(coeffs));
+}
+
+template<class T>
+inline unsigned Poly<T>::get_order() const {
+    return coeffs.size() - 1;
+}
+
+template<class T>
+inline Poly<T> Poly<T>::operator+(const Poly<T>& right) {
+    if (coeffs.size() < right.coeffs.size()) {
+        Poly<T> poly = right;
+        typename std::list<T>::reverse_iterator it = poly.coeffs.rbegin();
+        typename std::list<T>::reverse_iterator it2 = coeffs.rbegin();
+
+        for (; it2 != coeffs.rend(); it++, it2++)
+            *it += *it2;
+
+        return poly;
+    }
+
+    Poly<T> poly = *this;
+    typename std::list<T>::reverse_iterator it = poly.coeffs.rbegin();
+    typename std::list<T>::const_reverse_iterator it2 = right.coeffs.rbegin();
+
+    for (; it2 != right.coeffs.rend(); it++, it2++)
+        *it += *it2;
+
+    return poly;
+}
+
+template<class T>
+inline Poly<T> Poly<T>::operator-(const Poly<T>& right) {
+    if (coeffs.size() < right.coeffs.size()) {
+        Poly<T> poly = right;
+        typename std::list<T>::reverse_iterator it = poly.coeffs.rbegin();
+        typename std::list<T>::reverse_iterator it2 = coeffs.rbegin();
+
+        for (; it2 != coeffs.rend(); it++, it2++)
+            *it -= *it2;
+
+        return poly;
+    }
+
+    Poly<T> poly = *this;
+    typename std::list<T>::reverse_iterator it = poly.coeffs.rbegin();
+    typename std::list<T>::const_reverse_iterator it2 = right.coeffs.rbegin();
+
+    for (; it2 != right.coeffs.rend(); it++, it2++)
+        *it -= *it2;
+
+    return poly;
+}
+
+template<class T>
+inline Poly<T> Poly<T>::operator*(const Poly<T>& right) {
+    std::vector<T> a(coeffs.cbegin(), coeffs.cend()), b(right.coeffs.cbegin(), right.coeffs.cend());
+    std::vector<T> mult(get_order() + right.get_order() + 1);
+    size_t i, j;
+
+    for (i = 0; i < coeffs.size(); i++) {
+        for (j = 0; j < right.coeffs.size(); j++)
+            mult[i + j] += a[i] * b[j];
+    }
+
+    Poly poly;
+    poly.coeffs = std::list<T>(mult.cbegin(), mult.cend());
+
+    return poly;
+}
+
+template <class T>
+void Poly<T>::output() {
+    size_t i = 0;
+
+    for (auto& x : coeffs) {
+        std::cout << x << "*x^" << i;
+
+        ++i;
+
+        if (i < coeffs.size()) std::cout << " + ";
+    }
+
+    std::cout << "\n";
+}
+
+
+int main() {
+
+    Poly<int> a = { 1, 3, 5 }, b = { 1, 8 };
+    Poly<int> c = a * b, d = a + b;
+}
+
+
+
+
+
+//20.1
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <fstream>
+#include <iterator>
+#include <set>
+#include <map>
+
+int main() {
+    std::fstream in("text.txt");
+    std::string s;
+    std::map<std::string, unsigned> counter;
+
+    while (!in.eof()) {
+        in >> s;
+
+        ++counter[s];
+    }
+
+    for (const auto& [word, count] : counter)
+        std::cout << word << '\t' << count << '\n';
+
+    in.close();
+}
+
+
+
+
+
+//20.2
+#include <iostream>
+#include <iterator>
+#include <set>
+
+int main() {
+
+    std::set<double> nums = { 1, 2, 3, 4, 5, 6 };
+    std::set<double> tmp;
+
+    while (nums.size() != 1) {
+        for (auto it = nums.cbegin(); it != nums.cend(); it++) {
+            if (std::next(it) != nums.cend())
+                tmp.insert(*it + *std::next(it));
+        }
+
+        nums = tmp;
+
+        tmp.clear();
+    }
+
+    for (auto i : nums)
+        std::cout << i << '\n';
+}
